@@ -4,9 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <style>
+    button{
+      display: block;
+      margin-bottom: 10px;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <button onclick="window.capacitorBridge.takePicture()">Take Picture</button>
+    <button onclick="capacitorBridge.takePicture">拍照</button>
+    <button onclick="capacitorBridge.showPrompt">跳出提示</button>
+    <button onclick="openCapacitorSite">開啟app內瀏覽器</button>
+    <button onclick="logDeviceInfo">顯示app ID</button>
+    <button onclick="writeFile">儲存檔案到本地(capacitor-save-file-test.txt)</button>
+    <button onclick="hapticsVibrate">測試震動</button>
+    <button onclick="printCurrentPosition">顯示當前經緯度</button>
+    <button onclick="capacitorBridge.lockOrientation">鎖定landscape畫面</button>
+    <button onclick="capacitorBridge.shareUrl">app分享功能(網址)</button>
+    <button onclick="capacitorBridge.shareText">app分享功能(文字)</button>
+    <button onclick="capacitorBridge.showSplashScreen">顯示splash畫面2秒</button>
+    <button onclick="capacitorBridge.hideStatusBar">隱藏狀態欄</button>
+    <button onclick="capacitorBridge.showStatusBar">顯示狀態欄</button>
+    <button onclick="capacitorBridge.showHelloToast">顯示Toast提示</button>
+    <button onclick="capacitorBridge.openFbApp">開啟FB app</button>
   <script src="capacitor-bridge.umd.js?v=1"></script>
 </body>
 </html>
