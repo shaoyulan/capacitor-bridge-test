@@ -539,8 +539,7 @@
       allowEditing: true,
       resultType: CameraResultType.Uri
     });
-    var imageUrl = image.webPath;
-    imageElement.src = imageUrl;
+    image.webPath;
   };
   class CameraWeb extends WebPlugin {
     async getPhoto(options) {
