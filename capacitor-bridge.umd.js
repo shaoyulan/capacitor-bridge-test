@@ -619,8 +619,7 @@
       allowEditing: true,
       resultType: CameraResultType.Uri
     });
-    var imageUrl = image.webPath;
-    imageElement.src = imageUrl;
+    image.webPath;
   };
   window.capacitorBridge.showPrompt = async () => {
     const { value, cancelled } = await Dialog.prompt({
