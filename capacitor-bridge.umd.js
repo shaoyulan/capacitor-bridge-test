@@ -155,7 +155,7 @@
             callbackId
           }, callback);
         };
-        const p = new Promise((resolve) => call.then(() => resolve({ remove })));
+        const p = new Promise((resolve2) => call.then(() => resolve2({ remove })));
         p.remove = async () => {
           console.warn(`Using addListener() without 'await' is deprecated.`);
           await remove();
@@ -350,11 +350,11 @@
   registerPlugin("CapacitorCookies", {
     web: () => new CapacitorCookiesPluginWeb()
   });
-  const readBlobAsBase64 = async (blob) => new Promise((resolve, reject) => {
+  const readBlobAsBase64 = async (blob) => new Promise((resolve2, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const base64String = reader.result;
-      resolve(base64String.indexOf(",") >= 0 ? base64String.split(",")[1] : base64String);
+      resolve2(base64String.indexOf(",") >= 0 ? base64String.split(",")[1] : base64String);
     };
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(blob);
@@ -520,11 +520,92 @@
     CameraResultType2["Base64"] = "base64";
     CameraResultType2["DataUrl"] = "dataUrl";
   })(CameraResultType || (CameraResultType = {}));
-  registerPlugin("Camera", {
-    web: () => Promise.resolve().then(() => web$1).then((m) => new m.CameraWeb())
+  const Camera$1 = registerPlugin("Camera", {
+    web: () => Promise.resolve().then(() => web$a).then((m) => new m.CameraWeb())
   });
-  registerPlugin("Dialog", {
-    web: () => Promise.resolve().then(() => web).then((m) => new m.DialogWeb())
+  const Dialog = registerPlugin("Dialog", {
+    web: () => Promise.resolve().then(() => web$9).then((m) => new m.DialogWeb())
+  });
+  const Browser$1 = registerPlugin("Browser", {
+    web: () => Promise.resolve().then(() => web$8).then((m) => new m.BrowserWeb())
+  });
+  const Device = registerPlugin("Device", {
+    web: () => Promise.resolve().then(() => web$7).then((m) => new m.DeviceWeb())
+  });
+  var Directory;
+  (function(Directory2) {
+    Directory2["Documents"] = "DOCUMENTS";
+    Directory2["Data"] = "DATA";
+    Directory2["Library"] = "LIBRARY";
+    Directory2["Cache"] = "CACHE";
+    Directory2["External"] = "EXTERNAL";
+    Directory2["ExternalStorage"] = "EXTERNAL_STORAGE";
+  })(Directory || (Directory = {}));
+  var Encoding;
+  (function(Encoding2) {
+    Encoding2["UTF8"] = "utf8";
+    Encoding2["ASCII"] = "ascii";
+    Encoding2["UTF16"] = "utf16";
+  })(Encoding || (Encoding = {}));
+  const Filesystem = registerPlugin("Filesystem", {
+    web: () => Promise.resolve().then(() => web$6).then((m) => new m.FilesystemWeb())
+  });
+  const Geolocation$1 = registerPlugin("Geolocation", {
+    web: () => Promise.resolve().then(() => web$5).then((m) => new m.GeolocationWeb())
+  });
+  var ImpactStyle;
+  (function(ImpactStyle2) {
+    ImpactStyle2["Heavy"] = "HEAVY";
+    ImpactStyle2["Medium"] = "MEDIUM";
+    ImpactStyle2["Light"] = "LIGHT";
+  })(ImpactStyle || (ImpactStyle = {}));
+  var NotificationType;
+  (function(NotificationType2) {
+    NotificationType2["Success"] = "SUCCESS";
+    NotificationType2["Warning"] = "WARNING";
+    NotificationType2["Error"] = "ERROR";
+  })(NotificationType || (NotificationType = {}));
+  const Haptics = registerPlugin("Haptics", {
+    web: () => Promise.resolve().then(() => web$4).then((m) => new m.HapticsWeb())
+  });
+  var KeyboardStyle;
+  (function(KeyboardStyle2) {
+    KeyboardStyle2["Dark"] = "DARK";
+    KeyboardStyle2["Light"] = "LIGHT";
+    KeyboardStyle2["Default"] = "DEFAULT";
+  })(KeyboardStyle || (KeyboardStyle = {}));
+  var KeyboardResize;
+  (function(KeyboardResize2) {
+    KeyboardResize2["Body"] = "body";
+    KeyboardResize2["Ionic"] = "ionic";
+    KeyboardResize2["Native"] = "native";
+    KeyboardResize2["None"] = "none";
+  })(KeyboardResize || (KeyboardResize = {}));
+  const Keyboard = registerPlugin("Keyboard");
+  const ScreenOrientation = registerPlugin("ScreenOrientation", {
+    web: () => Promise.resolve().then(() => web$3).then((m) => new m.ScreenOrientationWeb())
+  });
+  const Share = registerPlugin("Share", {
+    web: () => Promise.resolve().then(() => web$2).then((m) => new m.ShareWeb())
+  });
+  const SplashScreen = registerPlugin("SplashScreen", {
+    web: () => Promise.resolve().then(() => web$1).then((m) => new m.SplashScreenWeb())
+  });
+  var Style;
+  (function(Style2) {
+    Style2["Dark"] = "DARK";
+    Style2["Light"] = "LIGHT";
+    Style2["Default"] = "DEFAULT";
+  })(Style || (Style = {}));
+  var Animation;
+  (function(Animation2) {
+    Animation2["None"] = "NONE";
+    Animation2["Slide"] = "SLIDE";
+    Animation2["Fade"] = "FADE";
+  })(Animation || (Animation = {}));
+  const StatusBar = registerPlugin("StatusBar");
+  const Toast = registerPlugin("Toast", {
+    web: () => Promise.resolve().then(() => web).then((m) => new m.ToastWeb())
   });
   window.capacitorBridge = {};
   if (Capacitor.isNativePlatform()) {
@@ -532,20 +613,104 @@
   } else {
     console.log("I'm a PWA or Web app!");
   }
-  window.capacitorBridge.takePicture = async function() {
-    console.log("Camera", window.Capacitor.Plugins.Camera);
-    const image = await window.Capacitor.Plugins.Camera.getPhoto({
+  window.capacitorBridge.takePicture = async () => {
+    const image = await Camera$1.getPhoto({
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Uri
     });
-    image.webPath;
+    var imageUrl = image.webPath;
+    imageElement.src = imageUrl;
   };
+  window.capacitorBridge.showPrompt = async () => {
+    const { value, cancelled } = await Dialog.prompt({
+      title: "訊息",
+      message: `確定刪除訊息?`,
+      okButtonTitle: "確定",
+      cancelButtonTitle: "取消"
+    });
+    console.log("Name:", value);
+    console.log("Cancelled:", cancelled);
+  };
+  window.capacitorBridge.openCapacitorSite = async () => {
+    await Browser$1.open({ url: "http://capacitorjs.com/" });
+  };
+  window.capacitorBridge.logDeviceInfo = async () => {
+    const idObj = await Device.getId();
+    Dialog.alert({
+      title: "訊息",
+      message: `app ID: ${idObj.identifier}`,
+      okButtonTitle: "確定"
+    });
+  };
+  window.capacitorBridge.writeFile = async () => {
+    await Filesystem.writeFile({
+      path: "capacitor-save-file-test.txt",
+      data: "This is a test",
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8
+    });
+  };
+  window.capacitorBridge.printCurrentPosition = async () => {
+    const coordinates = await Geolocation$1.getCurrentPosition();
+    Dialog.alert({
+      title: "訊息",
+      message: `lat: ${coordinates.coords.latitude}, 
+    lng: ${coordinates.coords.longitude}`,
+      okButtonTitle: "確定"
+    });
+  };
+  window.capacitorBridge.hapticsVibrate = async () => {
+    await Haptics.vibrate();
+  };
+  window.capacitorBridge.lockOrientation = async () => {
+    await ScreenOrientation.lock({
+      orientation: "landscape"
+    });
+  };
+  window.capacitorBridge.shareUrl = async () => {
+    await Share.share({
+      url: "http://ionicframework.com/"
+    });
+  };
+  window.capacitorBridge.shareText = async () => {
+    await Share.share({
+      text: "Really awesome thing you need to see right meow"
+    });
+  };
+  window.capacitorBridge.showSplashScreen = async () => {
+    await SplashScreen.show({
+      showDuration: 2e3,
+      autoHide: true
+    });
+  };
+  window.capacitorBridge.hideStatusBar = async () => {
+    await StatusBar.hide();
+  };
+  window.capacitorBridge.showStatusBar = async () => {
+    await StatusBar.show();
+  };
+  window.capacitorBridge.showHelloToast = async () => {
+    await Toast.show({
+      text: "測試Toast!",
+      position: "center"
+    });
+  };
+  window.capacitorBridge.openFbApp = async () => {
+    await AppLauncher.openUrl({ url: "fb://facewebmodal/f?href=https://www.facebook.com/" });
+  };
+  Keyboard.addListener("keyboardDidShow", (info) => {
+    Dialog.alert({
+      title: "訊息",
+      message: `鍵盤已顯示，鍵盤高度為: ${info.keyboardHeight}`,
+      okButtonTitle: "確定"
+    });
+  });
   class CameraWeb extends WebPlugin {
     async getPhoto(options) {
-      return new Promise(async (resolve, reject) => {
+      return new Promise(async (resolve2, reject) => {
         if (options.webUseInput || options.source === CameraSource.Photos) {
-          this.fileInputExperience(options, resolve);
+          this.fileInputExperience(options, resolve2);
         } else if (options.source === CameraSource.Prompt) {
           let actionSheet = document.querySelector("pwa-action-sheet");
           if (!actionSheet) {
@@ -561,22 +726,22 @@
           actionSheet.addEventListener("onSelection", async (e) => {
             const selection = e.detail;
             if (selection === 0) {
-              this.fileInputExperience(options, resolve);
+              this.fileInputExperience(options, resolve2);
             } else {
-              this.cameraExperience(options, resolve, reject);
+              this.cameraExperience(options, resolve2, reject);
             }
           });
         } else {
-          this.cameraExperience(options, resolve, reject);
+          this.cameraExperience(options, resolve2, reject);
         }
       });
     }
     async pickImages(_options) {
-      return new Promise(async (resolve) => {
-        this.multipleFileInputExperience(resolve);
+      return new Promise(async (resolve2) => {
+        this.multipleFileInputExperience(resolve2);
       });
     }
-    async cameraExperience(options, resolve, reject) {
+    async cameraExperience(options, resolve2, reject) {
       if (customElements.get("pwa-camera-modal")) {
         const cameraModal = document.createElement("pwa-camera-modal");
         cameraModal.facingMode = options.direction === CameraDirection.Front ? "user" : "environment";
@@ -590,21 +755,21 @@
             } else if (photo instanceof Error) {
               reject(photo);
             } else {
-              resolve(await this._getCameraPhoto(photo, options));
+              resolve2(await this._getCameraPhoto(photo, options));
             }
             cameraModal.dismiss();
             document.body.removeChild(cameraModal);
           });
           cameraModal.present();
         } catch (e) {
-          this.fileInputExperience(options, resolve);
+          this.fileInputExperience(options, resolve2);
         }
       } else {
         console.error(`Unable to load PWA Element 'pwa-camera-modal'. See the docs: https://capacitorjs.com/docs/web/pwa-elements.`);
-        this.fileInputExperience(options, resolve);
+        this.fileInputExperience(options, resolve2);
       }
     }
-    fileInputExperience(options, resolve) {
+    fileInputExperience(options, resolve2) {
       let input = document.querySelector("#_capacitor-camera-input");
       const cleanup = () => {
         var _a;
@@ -628,13 +793,13 @@
             const reader = new FileReader();
             reader.addEventListener("load", () => {
               if (options.resultType === "dataUrl") {
-                resolve({
+                resolve2({
                   dataUrl: reader.result,
                   format
                 });
               } else if (options.resultType === "base64") {
                 const b64 = reader.result.split(",")[1];
-                resolve({
+                resolve2({
                   base64String: b64,
                   format
                 });
@@ -643,7 +808,7 @@
             });
             reader.readAsDataURL(file);
           } else {
-            resolve({
+            resolve2({
               webPath: URL.createObjectURL(file),
               format
             });
@@ -662,7 +827,7 @@
       }
       input.click();
     }
-    multipleFileInputExperience(resolve) {
+    multipleFileInputExperience(resolve2) {
       let input = document.querySelector("#_capacitor-camera-input-multiple");
       const cleanup = () => {
         var _a;
@@ -690,7 +855,7 @@
               format
             });
           }
-          resolve({ photos });
+          resolve2({ photos });
           cleanup();
         });
       }
@@ -698,11 +863,11 @@
       input.click();
     }
     _getCameraPhoto(photo, options) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve2, reject) => {
         const reader = new FileReader();
         const format = photo.type.split("/")[1];
         if (options.resultType === "uri") {
-          resolve({
+          resolve2({
             webPath: URL.createObjectURL(photo),
             format,
             saved: false
@@ -712,13 +877,13 @@
           reader.onloadend = () => {
             const r = reader.result;
             if (options.resultType === "dataUrl") {
-              resolve({
+              resolve2({
                 dataUrl: r,
                 format,
                 saved: false
               });
             } else {
-              resolve({
+              resolve2({
                 base64String: r.split(",")[1],
                 format,
                 saved: false
@@ -758,7 +923,7 @@
     }
   }
   const Camera = new CameraWeb();
-  const web$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$a = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     Camera,
     CameraWeb
@@ -781,8 +946,931 @@
       };
     }
   }
-  const web = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     DialogWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class BrowserWeb extends WebPlugin {
+    constructor() {
+      super();
+      this._lastWindow = null;
+    }
+    async open(options) {
+      this._lastWindow = window.open(options.url, options.windowName || "_blank");
+    }
+    async close() {
+      return new Promise((resolve2, reject) => {
+        if (this._lastWindow != null) {
+          this._lastWindow.close();
+          this._lastWindow = null;
+          resolve2();
+        } else {
+          reject("No active window to close!");
+        }
+      });
+    }
+  }
+  const Browser = new BrowserWeb();
+  const web$8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    Browser,
+    BrowserWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class DeviceWeb extends WebPlugin {
+    async getId() {
+      return {
+        identifier: this.getUid()
+      };
+    }
+    async getInfo() {
+      if (typeof navigator === "undefined" || !navigator.userAgent) {
+        throw this.unavailable("Device API not available in this browser");
+      }
+      const ua = navigator.userAgent;
+      const uaFields = this.parseUa(ua);
+      return {
+        model: uaFields.model,
+        platform: "web",
+        operatingSystem: uaFields.operatingSystem,
+        osVersion: uaFields.osVersion,
+        manufacturer: navigator.vendor,
+        isVirtual: false,
+        webViewVersion: uaFields.browserVersion
+      };
+    }
+    async getBatteryInfo() {
+      if (typeof navigator === "undefined" || !navigator.getBattery) {
+        throw this.unavailable("Device API not available in this browser");
+      }
+      let battery = {};
+      try {
+        battery = await navigator.getBattery();
+      } catch (e) {
+      }
+      return {
+        batteryLevel: battery.level,
+        isCharging: battery.charging
+      };
+    }
+    async getLanguageCode() {
+      return {
+        value: navigator.language.split("-")[0].toLowerCase()
+      };
+    }
+    async getLanguageTag() {
+      return {
+        value: navigator.language
+      };
+    }
+    parseUa(ua) {
+      const uaFields = {};
+      const start = ua.indexOf("(") + 1;
+      let end = ua.indexOf(") AppleWebKit");
+      if (ua.indexOf(") Gecko") !== -1) {
+        end = ua.indexOf(") Gecko");
+      }
+      const fields = ua.substring(start, end);
+      if (ua.indexOf("Android") !== -1) {
+        const tmpFields = fields.replace("; wv", "").split("; ").pop();
+        if (tmpFields) {
+          uaFields.model = tmpFields.split(" Build")[0];
+        }
+        uaFields.osVersion = fields.split("; ")[1];
+      } else {
+        uaFields.model = fields.split("; ")[0];
+        if (typeof navigator !== "undefined" && navigator.oscpu) {
+          uaFields.osVersion = navigator.oscpu;
+        } else {
+          if (ua.indexOf("Windows") !== -1) {
+            uaFields.osVersion = fields;
+          } else {
+            const tmpFields = fields.split("; ").pop();
+            if (tmpFields) {
+              const lastParts = tmpFields.replace(" like Mac OS X", "").split(" ");
+              uaFields.osVersion = lastParts[lastParts.length - 1].replace(/_/g, ".");
+            }
+          }
+        }
+      }
+      if (/android/i.test(ua)) {
+        uaFields.operatingSystem = "android";
+      } else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+        uaFields.operatingSystem = "ios";
+      } else if (/Win/.test(ua)) {
+        uaFields.operatingSystem = "windows";
+      } else if (/Mac/i.test(ua)) {
+        uaFields.operatingSystem = "mac";
+      } else {
+        uaFields.operatingSystem = "unknown";
+      }
+      const isSafari = !!window.ApplePaySession;
+      const isChrome = !!window.chrome;
+      const isFirefox = /Firefox/.test(ua);
+      const isEdge = /Edg/.test(ua);
+      const isFirefoxIOS = /FxiOS/.test(ua);
+      const isChromeIOS = /CriOS/.test(ua);
+      const isEdgeIOS = /EdgiOS/.test(ua);
+      if (isSafari || isChrome && !isEdge || isFirefoxIOS || isChromeIOS || isEdgeIOS) {
+        let searchWord;
+        if (isFirefoxIOS) {
+          searchWord = "FxiOS";
+        } else if (isChromeIOS) {
+          searchWord = "CriOS";
+        } else if (isEdgeIOS) {
+          searchWord = "EdgiOS";
+        } else if (isSafari) {
+          searchWord = "Version";
+        } else {
+          searchWord = "Chrome";
+        }
+        const words = ua.split(" ");
+        for (const word of words) {
+          if (word.includes(searchWord)) {
+            const version = word.split("/")[1];
+            uaFields.browserVersion = version;
+          }
+        }
+      } else if (isFirefox || isEdge) {
+        const reverseUA = ua.split("").reverse().join("");
+        const reverseVersion = reverseUA.split("/")[0];
+        const version = reverseVersion.split("").reverse().join("");
+        uaFields.browserVersion = version;
+      }
+      return uaFields;
+    }
+    getUid() {
+      if (typeof window !== "undefined" && window.localStorage) {
+        let uid = window.localStorage.getItem("_capuid");
+        if (uid) {
+          return uid;
+        }
+        uid = this.uuid4();
+        window.localStorage.setItem("_capuid", uid);
+        return uid;
+      }
+      return this.uuid4();
+    }
+    uuid4() {
+      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === "x" ? r : r & 3 | 8;
+        return v.toString(16);
+      });
+    }
+  }
+  const web$7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    DeviceWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  function resolve(path) {
+    const posix = path.split("/").filter((item) => item !== ".");
+    const newPosix = [];
+    posix.forEach((item) => {
+      if (item === ".." && newPosix.length > 0 && newPosix[newPosix.length - 1] !== "..") {
+        newPosix.pop();
+      } else {
+        newPosix.push(item);
+      }
+    });
+    return newPosix.join("/");
+  }
+  function isPathParent(parent, children) {
+    parent = resolve(parent);
+    children = resolve(children);
+    const pathsA = parent.split("/");
+    const pathsB = children.split("/");
+    return parent !== children && pathsA.every((value, index) => value === pathsB[index]);
+  }
+  class FilesystemWeb extends WebPlugin {
+    constructor() {
+      super(...arguments);
+      this.DB_VERSION = 1;
+      this.DB_NAME = "Disc";
+      this._writeCmds = ["add", "put", "delete"];
+      this.downloadFile = async (options) => {
+        var _a, _b;
+        const requestInit = buildRequestInit(options, options.webFetchExtra);
+        const response = await fetch(options.url, requestInit);
+        let blob;
+        if (!options.progress)
+          blob = await response.blob();
+        else if (!(response === null || response === void 0 ? void 0 : response.body))
+          blob = new Blob();
+        else {
+          const reader = response.body.getReader();
+          let bytes = 0;
+          const chunks = [];
+          const contentType = response.headers.get("content-type");
+          const contentLength = parseInt(response.headers.get("content-length") || "0", 10);
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done)
+              break;
+            chunks.push(value);
+            bytes += (value === null || value === void 0 ? void 0 : value.length) || 0;
+            const status = {
+              url: options.url,
+              bytes,
+              contentLength
+            };
+            this.notifyListeners("progress", status);
+          }
+          const allChunks = new Uint8Array(bytes);
+          let position = 0;
+          for (const chunk of chunks) {
+            if (typeof chunk === "undefined")
+              continue;
+            allChunks.set(chunk, position);
+            position += chunk.length;
+          }
+          blob = new Blob([allChunks.buffer], { type: contentType || void 0 });
+        }
+        const result = await this.writeFile({
+          path: options.path,
+          directory: (_a = options.directory) !== null && _a !== void 0 ? _a : void 0,
+          recursive: (_b = options.recursive) !== null && _b !== void 0 ? _b : false,
+          data: blob
+        });
+        return { path: result.uri, blob };
+      };
+    }
+    async initDb() {
+      if (this._db !== void 0) {
+        return this._db;
+      }
+      if (!("indexedDB" in window)) {
+        throw this.unavailable("This browser doesn't support IndexedDB");
+      }
+      return new Promise((resolve2, reject) => {
+        const request = indexedDB.open(this.DB_NAME, this.DB_VERSION);
+        request.onupgradeneeded = FilesystemWeb.doUpgrade;
+        request.onsuccess = () => {
+          this._db = request.result;
+          resolve2(request.result);
+        };
+        request.onerror = () => reject(request.error);
+        request.onblocked = () => {
+          console.warn("db blocked");
+        };
+      });
+    }
+    static doUpgrade(event) {
+      const eventTarget = event.target;
+      const db = eventTarget.result;
+      switch (event.oldVersion) {
+        case 0:
+        case 1:
+        default: {
+          if (db.objectStoreNames.contains("FileStorage")) {
+            db.deleteObjectStore("FileStorage");
+          }
+          const store = db.createObjectStore("FileStorage", { keyPath: "path" });
+          store.createIndex("by_folder", "folder");
+        }
+      }
+    }
+    async dbRequest(cmd, args) {
+      const readFlag = this._writeCmds.indexOf(cmd) !== -1 ? "readwrite" : "readonly";
+      return this.initDb().then((conn) => {
+        return new Promise((resolve2, reject) => {
+          const tx = conn.transaction(["FileStorage"], readFlag);
+          const store = tx.objectStore("FileStorage");
+          const req = store[cmd](...args);
+          req.onsuccess = () => resolve2(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      });
+    }
+    async dbIndexRequest(indexName, cmd, args) {
+      const readFlag = this._writeCmds.indexOf(cmd) !== -1 ? "readwrite" : "readonly";
+      return this.initDb().then((conn) => {
+        return new Promise((resolve2, reject) => {
+          const tx = conn.transaction(["FileStorage"], readFlag);
+          const store = tx.objectStore("FileStorage");
+          const index = store.index(indexName);
+          const req = index[cmd](...args);
+          req.onsuccess = () => resolve2(req.result);
+          req.onerror = () => reject(req.error);
+        });
+      });
+    }
+    getPath(directory, uriPath) {
+      const cleanedUriPath = uriPath !== void 0 ? uriPath.replace(/^[/]+|[/]+$/g, "") : "";
+      let fsPath = "";
+      if (directory !== void 0)
+        fsPath += "/" + directory;
+      if (uriPath !== "")
+        fsPath += "/" + cleanedUriPath;
+      return fsPath;
+    }
+    async clear() {
+      const conn = await this.initDb();
+      const tx = conn.transaction(["FileStorage"], "readwrite");
+      const store = tx.objectStore("FileStorage");
+      store.clear();
+    }
+    /**
+     * Read a file from disk
+     * @param options options for the file read
+     * @return a promise that resolves with the read file data result
+     */
+    async readFile(options) {
+      const path = this.getPath(options.directory, options.path);
+      const entry = await this.dbRequest("get", [path]);
+      if (entry === void 0)
+        throw Error("File does not exist.");
+      return { data: entry.content ? entry.content : "" };
+    }
+    /**
+     * Write a file to disk in the specified location on device
+     * @param options options for the file write
+     * @return a promise that resolves with the file write result
+     */
+    async writeFile(options) {
+      const path = this.getPath(options.directory, options.path);
+      let data = options.data;
+      const encoding = options.encoding;
+      const doRecursive = options.recursive;
+      const occupiedEntry = await this.dbRequest("get", [path]);
+      if (occupiedEntry && occupiedEntry.type === "directory")
+        throw Error("The supplied path is a directory.");
+      const parentPath = path.substr(0, path.lastIndexOf("/"));
+      const parentEntry = await this.dbRequest("get", [parentPath]);
+      if (parentEntry === void 0) {
+        const subDirIndex = parentPath.indexOf("/", 1);
+        if (subDirIndex !== -1) {
+          const parentArgPath = parentPath.substr(subDirIndex);
+          await this.mkdir({
+            path: parentArgPath,
+            directory: options.directory,
+            recursive: doRecursive
+          });
+        }
+      }
+      if (!encoding && !(data instanceof Blob)) {
+        data = data.indexOf(",") >= 0 ? data.split(",")[1] : data;
+        if (!this.isBase64String(data))
+          throw Error("The supplied data is not valid base64 content.");
+      }
+      const now = Date.now();
+      const pathObj = {
+        path,
+        folder: parentPath,
+        type: "file",
+        size: data instanceof Blob ? data.size : data.length,
+        ctime: now,
+        mtime: now,
+        content: data
+      };
+      await this.dbRequest("put", [pathObj]);
+      return {
+        uri: pathObj.path
+      };
+    }
+    /**
+     * Append to a file on disk in the specified location on device
+     * @param options options for the file append
+     * @return a promise that resolves with the file write result
+     */
+    async appendFile(options) {
+      const path = this.getPath(options.directory, options.path);
+      let data = options.data;
+      const encoding = options.encoding;
+      const parentPath = path.substr(0, path.lastIndexOf("/"));
+      const now = Date.now();
+      let ctime = now;
+      const occupiedEntry = await this.dbRequest("get", [path]);
+      if (occupiedEntry && occupiedEntry.type === "directory")
+        throw Error("The supplied path is a directory.");
+      const parentEntry = await this.dbRequest("get", [parentPath]);
+      if (parentEntry === void 0) {
+        const subDirIndex = parentPath.indexOf("/", 1);
+        if (subDirIndex !== -1) {
+          const parentArgPath = parentPath.substr(subDirIndex);
+          await this.mkdir({
+            path: parentArgPath,
+            directory: options.directory,
+            recursive: true
+          });
+        }
+      }
+      if (!encoding && !this.isBase64String(data))
+        throw Error("The supplied data is not valid base64 content.");
+      if (occupiedEntry !== void 0) {
+        if (occupiedEntry.content instanceof Blob) {
+          throw Error("The occupied entry contains a Blob object which cannot be appended to.");
+        }
+        if (occupiedEntry.content !== void 0 && !encoding) {
+          data = btoa(atob(occupiedEntry.content) + atob(data));
+        } else {
+          data = occupiedEntry.content + data;
+        }
+        ctime = occupiedEntry.ctime;
+      }
+      const pathObj = {
+        path,
+        folder: parentPath,
+        type: "file",
+        size: data.length,
+        ctime,
+        mtime: now,
+        content: data
+      };
+      await this.dbRequest("put", [pathObj]);
+    }
+    /**
+     * Delete a file from disk
+     * @param options options for the file delete
+     * @return a promise that resolves with the deleted file data result
+     */
+    async deleteFile(options) {
+      const path = this.getPath(options.directory, options.path);
+      const entry = await this.dbRequest("get", [path]);
+      if (entry === void 0)
+        throw Error("File does not exist.");
+      const entries = await this.dbIndexRequest("by_folder", "getAllKeys", [
+        IDBKeyRange.only(path)
+      ]);
+      if (entries.length !== 0)
+        throw Error("Folder is not empty.");
+      await this.dbRequest("delete", [path]);
+    }
+    /**
+     * Create a directory.
+     * @param options options for the mkdir
+     * @return a promise that resolves with the mkdir result
+     */
+    async mkdir(options) {
+      const path = this.getPath(options.directory, options.path);
+      const doRecursive = options.recursive;
+      const parentPath = path.substr(0, path.lastIndexOf("/"));
+      const depth = (path.match(/\//g) || []).length;
+      const parentEntry = await this.dbRequest("get", [parentPath]);
+      const occupiedEntry = await this.dbRequest("get", [path]);
+      if (depth === 1)
+        throw Error("Cannot create Root directory");
+      if (occupiedEntry !== void 0)
+        throw Error("Current directory does already exist.");
+      if (!doRecursive && depth !== 2 && parentEntry === void 0)
+        throw Error("Parent directory must exist");
+      if (doRecursive && depth !== 2 && parentEntry === void 0) {
+        const parentArgPath = parentPath.substr(parentPath.indexOf("/", 1));
+        await this.mkdir({
+          path: parentArgPath,
+          directory: options.directory,
+          recursive: doRecursive
+        });
+      }
+      const now = Date.now();
+      const pathObj = {
+        path,
+        folder: parentPath,
+        type: "directory",
+        size: 0,
+        ctime: now,
+        mtime: now
+      };
+      await this.dbRequest("put", [pathObj]);
+    }
+    /**
+     * Remove a directory
+     * @param options the options for the directory remove
+     */
+    async rmdir(options) {
+      const { path, directory, recursive } = options;
+      const fullPath = this.getPath(directory, path);
+      const entry = await this.dbRequest("get", [fullPath]);
+      if (entry === void 0)
+        throw Error("Folder does not exist.");
+      if (entry.type !== "directory")
+        throw Error("Requested path is not a directory");
+      const readDirResult = await this.readdir({ path, directory });
+      if (readDirResult.files.length !== 0 && !recursive)
+        throw Error("Folder is not empty");
+      for (const entry2 of readDirResult.files) {
+        const entryPath = `${path}/${entry2.name}`;
+        const entryObj = await this.stat({ path: entryPath, directory });
+        if (entryObj.type === "file") {
+          await this.deleteFile({ path: entryPath, directory });
+        } else {
+          await this.rmdir({ path: entryPath, directory, recursive });
+        }
+      }
+      await this.dbRequest("delete", [fullPath]);
+    }
+    /**
+     * Return a list of files from the directory (not recursive)
+     * @param options the options for the readdir operation
+     * @return a promise that resolves with the readdir directory listing result
+     */
+    async readdir(options) {
+      const path = this.getPath(options.directory, options.path);
+      const entry = await this.dbRequest("get", [path]);
+      if (options.path !== "" && entry === void 0)
+        throw Error("Folder does not exist.");
+      const entries = await this.dbIndexRequest("by_folder", "getAllKeys", [IDBKeyRange.only(path)]);
+      const files = await Promise.all(entries.map(async (e) => {
+        let subEntry = await this.dbRequest("get", [e]);
+        if (subEntry === void 0) {
+          subEntry = await this.dbRequest("get", [e + "/"]);
+        }
+        return {
+          name: e.substring(path.length + 1),
+          type: subEntry.type,
+          size: subEntry.size,
+          ctime: subEntry.ctime,
+          mtime: subEntry.mtime,
+          uri: subEntry.path
+        };
+      }));
+      return { files };
+    }
+    /**
+     * Return full File URI for a path and directory
+     * @param options the options for the stat operation
+     * @return a promise that resolves with the file stat result
+     */
+    async getUri(options) {
+      const path = this.getPath(options.directory, options.path);
+      let entry = await this.dbRequest("get", [path]);
+      if (entry === void 0) {
+        entry = await this.dbRequest("get", [path + "/"]);
+      }
+      return {
+        uri: (entry === null || entry === void 0 ? void 0 : entry.path) || path
+      };
+    }
+    /**
+     * Return data about a file
+     * @param options the options for the stat operation
+     * @return a promise that resolves with the file stat result
+     */
+    async stat(options) {
+      const path = this.getPath(options.directory, options.path);
+      let entry = await this.dbRequest("get", [path]);
+      if (entry === void 0) {
+        entry = await this.dbRequest("get", [path + "/"]);
+      }
+      if (entry === void 0)
+        throw Error("Entry does not exist.");
+      return {
+        type: entry.type,
+        size: entry.size,
+        ctime: entry.ctime,
+        mtime: entry.mtime,
+        uri: entry.path
+      };
+    }
+    /**
+     * Rename a file or directory
+     * @param options the options for the rename operation
+     * @return a promise that resolves with the rename result
+     */
+    async rename(options) {
+      await this._copy(options, true);
+      return;
+    }
+    /**
+     * Copy a file or directory
+     * @param options the options for the copy operation
+     * @return a promise that resolves with the copy result
+     */
+    async copy(options) {
+      return this._copy(options, false);
+    }
+    async requestPermissions() {
+      return { publicStorage: "granted" };
+    }
+    async checkPermissions() {
+      return { publicStorage: "granted" };
+    }
+    /**
+     * Function that can perform a copy or a rename
+     * @param options the options for the rename operation
+     * @param doRename whether to perform a rename or copy operation
+     * @return a promise that resolves with the result
+     */
+    async _copy(options, doRename = false) {
+      let { toDirectory } = options;
+      const { to, from, directory: fromDirectory } = options;
+      if (!to || !from) {
+        throw Error("Both to and from must be provided");
+      }
+      if (!toDirectory) {
+        toDirectory = fromDirectory;
+      }
+      const fromPath = this.getPath(fromDirectory, from);
+      const toPath = this.getPath(toDirectory, to);
+      if (fromPath === toPath) {
+        return {
+          uri: toPath
+        };
+      }
+      if (isPathParent(fromPath, toPath)) {
+        throw Error("To path cannot contain the from path");
+      }
+      let toObj;
+      try {
+        toObj = await this.stat({
+          path: to,
+          directory: toDirectory
+        });
+      } catch (e) {
+        const toPathComponents = to.split("/");
+        toPathComponents.pop();
+        const toPath2 = toPathComponents.join("/");
+        if (toPathComponents.length > 0) {
+          const toParentDirectory = await this.stat({
+            path: toPath2,
+            directory: toDirectory
+          });
+          if (toParentDirectory.type !== "directory") {
+            throw new Error("Parent directory of the to path is a file");
+          }
+        }
+      }
+      if (toObj && toObj.type === "directory") {
+        throw new Error("Cannot overwrite a directory with a file");
+      }
+      const fromObj = await this.stat({
+        path: from,
+        directory: fromDirectory
+      });
+      const updateTime = async (path, ctime2, mtime) => {
+        const fullPath = this.getPath(toDirectory, path);
+        const entry = await this.dbRequest("get", [fullPath]);
+        entry.ctime = ctime2;
+        entry.mtime = mtime;
+        await this.dbRequest("put", [entry]);
+      };
+      const ctime = fromObj.ctime ? fromObj.ctime : Date.now();
+      switch (fromObj.type) {
+        case "file": {
+          const file = await this.readFile({
+            path: from,
+            directory: fromDirectory
+          });
+          if (doRename) {
+            await this.deleteFile({
+              path: from,
+              directory: fromDirectory
+            });
+          }
+          let encoding;
+          if (!(file.data instanceof Blob) && !this.isBase64String(file.data)) {
+            encoding = Encoding.UTF8;
+          }
+          const writeResult = await this.writeFile({
+            path: to,
+            directory: toDirectory,
+            data: file.data,
+            encoding
+          });
+          if (doRename) {
+            await updateTime(to, ctime, fromObj.mtime);
+          }
+          return writeResult;
+        }
+        case "directory": {
+          if (toObj) {
+            throw Error("Cannot move a directory over an existing object");
+          }
+          try {
+            await this.mkdir({
+              path: to,
+              directory: toDirectory,
+              recursive: false
+            });
+            if (doRename) {
+              await updateTime(to, ctime, fromObj.mtime);
+            }
+          } catch (e) {
+          }
+          const contents = (await this.readdir({
+            path: from,
+            directory: fromDirectory
+          })).files;
+          for (const filename of contents) {
+            await this._copy({
+              from: `${from}/${filename.name}`,
+              to: `${to}/${filename.name}`,
+              directory: fromDirectory,
+              toDirectory
+            }, doRename);
+          }
+          if (doRename) {
+            await this.rmdir({
+              path: from,
+              directory: fromDirectory
+            });
+          }
+        }
+      }
+      return {
+        uri: toPath
+      };
+    }
+    isBase64String(str) {
+      try {
+        return btoa(atob(str)) == str;
+      } catch (err) {
+        return false;
+      }
+    }
+  }
+  FilesystemWeb._debug = true;
+  const web$6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    FilesystemWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class GeolocationWeb extends WebPlugin {
+    async getCurrentPosition(options) {
+      return new Promise((resolve2, reject) => {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          resolve2(pos);
+        }, (err) => {
+          reject(err);
+        }, Object.assign({ enableHighAccuracy: false, timeout: 1e4, maximumAge: 0 }, options));
+      });
+    }
+    async watchPosition(options, callback) {
+      const id = navigator.geolocation.watchPosition((pos) => {
+        callback(pos);
+      }, (err) => {
+        callback(null, err);
+      }, Object.assign({ enableHighAccuracy: false, timeout: 1e4, maximumAge: 0 }, options));
+      return `${id}`;
+    }
+    async clearWatch(options) {
+      window.navigator.geolocation.clearWatch(parseInt(options.id, 10));
+    }
+    async checkPermissions() {
+      if (typeof navigator === "undefined" || !navigator.permissions) {
+        throw this.unavailable("Permissions API not available in this browser");
+      }
+      const permission = await window.navigator.permissions.query({
+        name: "geolocation"
+      });
+      return { location: permission.state, coarseLocation: permission.state };
+    }
+    async requestPermissions() {
+      throw this.unimplemented("Not implemented on web.");
+    }
+  }
+  const Geolocation = new GeolocationWeb();
+  const web$5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    Geolocation,
+    GeolocationWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class HapticsWeb extends WebPlugin {
+    constructor() {
+      super(...arguments);
+      this.selectionStarted = false;
+    }
+    async impact(options) {
+      const pattern = this.patternForImpact(options === null || options === void 0 ? void 0 : options.style);
+      this.vibrateWithPattern(pattern);
+    }
+    async notification(options) {
+      const pattern = this.patternForNotification(options === null || options === void 0 ? void 0 : options.type);
+      this.vibrateWithPattern(pattern);
+    }
+    async vibrate(options) {
+      const duration = (options === null || options === void 0 ? void 0 : options.duration) || 300;
+      this.vibrateWithPattern([duration]);
+    }
+    async selectionStart() {
+      this.selectionStarted = true;
+    }
+    async selectionChanged() {
+      if (this.selectionStarted) {
+        this.vibrateWithPattern([70]);
+      }
+    }
+    async selectionEnd() {
+      this.selectionStarted = false;
+    }
+    patternForImpact(style = ImpactStyle.Heavy) {
+      if (style === ImpactStyle.Medium) {
+        return [43];
+      } else if (style === ImpactStyle.Light) {
+        return [20];
+      }
+      return [61];
+    }
+    patternForNotification(type = NotificationType.Success) {
+      if (type === NotificationType.Warning) {
+        return [30, 40, 30, 50, 60];
+      } else if (type === NotificationType.Error) {
+        return [27, 45, 50];
+      }
+      return [35, 65, 21];
+    }
+    vibrateWithPattern(pattern) {
+      if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+      } else {
+        throw this.unavailable("Browser does not support the vibrate API");
+      }
+    }
+  }
+  const web$4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    HapticsWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class ScreenOrientationWeb extends WebPlugin {
+    constructor() {
+      super();
+      if (typeof screen !== "undefined" && typeof screen.orientation !== "undefined") {
+        screen.orientation.addEventListener("change", () => {
+          const type = screen.orientation.type;
+          this.notifyListeners("screenOrientationChange", { type });
+        });
+      }
+    }
+    async orientation() {
+      if (typeof screen === "undefined" || !screen.orientation) {
+        throw this.unavailable("ScreenOrientation API not available in this browser");
+      }
+      return { type: screen.orientation.type };
+    }
+    async lock(options) {
+      if (typeof screen === "undefined" || !screen.orientation || !screen.orientation.lock) {
+        throw this.unavailable("ScreenOrientation API not available in this browser");
+      }
+      try {
+        await screen.orientation.lock(options.orientation);
+      } catch (_a) {
+        throw this.unavailable("ScreenOrientation API not available in this browser");
+      }
+    }
+    async unlock() {
+      if (typeof screen === "undefined" || !screen.orientation || !screen.orientation.unlock) {
+        throw this.unavailable("ScreenOrientation API not available in this browser");
+      }
+      try {
+        screen.orientation.unlock();
+      } catch (_a) {
+        throw this.unavailable("ScreenOrientation API not available in this browser");
+      }
+    }
+  }
+  const web$3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    ScreenOrientationWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class ShareWeb extends WebPlugin {
+    async canShare() {
+      if (typeof navigator === "undefined" || !navigator.share) {
+        return { value: false };
+      } else {
+        return { value: true };
+      }
+    }
+    async share(options) {
+      if (typeof navigator === "undefined" || !navigator.share) {
+        throw this.unavailable("Share API not available in this browser");
+      }
+      await navigator.share({
+        title: options.title,
+        text: options.text,
+        url: options.url
+      });
+      return {};
+    }
+  }
+  const web$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    ShareWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class SplashScreenWeb extends WebPlugin {
+    async show(_options) {
+      return void 0;
+    }
+    async hide(_options) {
+      return void 0;
+    }
+  }
+  const web$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    SplashScreenWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class ToastWeb extends WebPlugin {
+    async show(options) {
+      if (typeof document !== "undefined") {
+        let duration = 2e3;
+        if (options.duration) {
+          duration = options.duration === "long" ? 3500 : 2e3;
+        }
+        const toast = document.createElement("pwa-toast");
+        toast.duration = duration;
+        toast.message = options.text;
+        document.body.appendChild(toast);
+      }
+    }
+  }
+  const web = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    ToastWeb
   }, Symbol.toStringTag, { value: "Module" }));
 });
