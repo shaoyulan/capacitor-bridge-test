@@ -1,4 +1,4 @@
-import { W as WebPlugin } from "./main-7bc8310f.js";
+import { W as WebPlugin } from "./main-b73dcf92.js";
 class DialogWeb extends WebPlugin {
   async alert(options) {
     window.alert(options.message);

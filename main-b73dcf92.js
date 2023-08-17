@@ -516,11 +516,11 @@ var CameraResultType;
   CameraResultType2["Base64"] = "base64";
   CameraResultType2["DataUrl"] = "dataUrl";
 })(CameraResultType || (CameraResultType = {}));
-const Camera = registerPlugin("Camera", {
-  web: () => import("./web-73cdce85.js").then((m) => new m.CameraWeb())
+registerPlugin("Camera", {
+  web: () => import("./web-910a2c30.js").then((m) => new m.CameraWeb())
 });
 registerPlugin("Dialog", {
-  web: () => import("./web-0a19aab7.js").then((m) => new m.DialogWeb())
+  web: () => import("./web-191a69ed.js").then((m) => new m.DialogWeb())
 });
 window.capacitorBridge = {};
 if (Capacitor.isNativePlatform()) {
@@ -529,8 +529,8 @@ if (Capacitor.isNativePlatform()) {
   console.log("I'm a PWA or Web app!");
 }
 window.capacitorBridge.takePicture = async function() {
-  console.log("Camera", Camera);
-  const image = await Camera.getPhoto({
+  console.log("Camera", window.Capacitor.Plugins.Camera);
+  const image = await window.Capacitor.Plugins.Camera.getPhoto({
     quality: 90,
     allowEditing: true,
     resultType: CameraResultType.Uri

@@ -520,7 +520,7 @@
     CameraResultType2["Base64"] = "base64";
     CameraResultType2["DataUrl"] = "dataUrl";
   })(CameraResultType || (CameraResultType = {}));
-  const Camera$1 = registerPlugin("Camera", {
+  registerPlugin("Camera", {
     web: () => Promise.resolve().then(() => web$1).then((m) => new m.CameraWeb())
   });
   registerPlugin("Dialog", {
@@ -533,8 +533,8 @@
     console.log("I'm a PWA or Web app!");
   }
   window.capacitorBridge.takePicture = async function() {
-    console.log("Camera", Camera$1);
-    const image = await Camera$1.getPhoto({
+    console.log("Camera", window.Capacitor.Plugins.Camera);
+    const image = await window.Capacitor.Plugins.Camera.getPhoto({
       quality: 90,
       allowEditing: true,
       resultType: CameraResultType.Uri
