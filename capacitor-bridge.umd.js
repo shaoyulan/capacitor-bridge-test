@@ -503,6 +503,7 @@
   registerPlugin("CapacitorHttp", {
     web: () => new CapacitorHttpPluginWeb()
   });
+  const PushNotifications = registerPlugin("PushNotifications", {});
   var CameraSource;
   (function(CameraSource2) {
     CameraSource2["Prompt"] = "PROMPT";
@@ -521,16 +522,16 @@
     CameraResultType2["DataUrl"] = "dataUrl";
   })(CameraResultType || (CameraResultType = {}));
   const Camera$1 = registerPlugin("Camera", {
-    web: () => Promise.resolve().then(() => web$a).then((m) => new m.CameraWeb())
+    web: () => Promise.resolve().then(() => web$c).then((m) => new m.CameraWeb())
   });
   const Dialog = registerPlugin("Dialog", {
-    web: () => Promise.resolve().then(() => web$9).then((m) => new m.DialogWeb())
+    web: () => Promise.resolve().then(() => web$b).then((m) => new m.DialogWeb())
   });
   const Browser$1 = registerPlugin("Browser", {
-    web: () => Promise.resolve().then(() => web$8).then((m) => new m.BrowserWeb())
+    web: () => Promise.resolve().then(() => web$a).then((m) => new m.BrowserWeb())
   });
   const Device = registerPlugin("Device", {
-    web: () => Promise.resolve().then(() => web$7).then((m) => new m.DeviceWeb())
+    web: () => Promise.resolve().then(() => web$9).then((m) => new m.DeviceWeb())
   });
   var Directory;
   (function(Directory2) {
@@ -548,10 +549,10 @@
     Encoding2["UTF16"] = "utf16";
   })(Encoding || (Encoding = {}));
   const Filesystem = registerPlugin("Filesystem", {
-    web: () => Promise.resolve().then(() => web$6).then((m) => new m.FilesystemWeb())
+    web: () => Promise.resolve().then(() => web$8).then((m) => new m.FilesystemWeb())
   });
   const Geolocation$1 = registerPlugin("Geolocation", {
-    web: () => Promise.resolve().then(() => web$5).then((m) => new m.GeolocationWeb())
+    web: () => Promise.resolve().then(() => web$7).then((m) => new m.GeolocationWeb())
   });
   var ImpactStyle;
   (function(ImpactStyle2) {
@@ -566,7 +567,7 @@
     NotificationType2["Error"] = "ERROR";
   })(NotificationType || (NotificationType = {}));
   const Haptics = registerPlugin("Haptics", {
-    web: () => Promise.resolve().then(() => web$4).then((m) => new m.HapticsWeb())
+    web: () => Promise.resolve().then(() => web$6).then((m) => new m.HapticsWeb())
   });
   var KeyboardStyle;
   (function(KeyboardStyle2) {
@@ -583,13 +584,13 @@
   })(KeyboardResize || (KeyboardResize = {}));
   const Keyboard = registerPlugin("Keyboard");
   const ScreenOrientation = registerPlugin("ScreenOrientation", {
-    web: () => Promise.resolve().then(() => web$3).then((m) => new m.ScreenOrientationWeb())
+    web: () => Promise.resolve().then(() => web$5).then((m) => new m.ScreenOrientationWeb())
   });
   const Share = registerPlugin("Share", {
-    web: () => Promise.resolve().then(() => web$2).then((m) => new m.ShareWeb())
+    web: () => Promise.resolve().then(() => web$4).then((m) => new m.ShareWeb())
   });
   const SplashScreen = registerPlugin("SplashScreen", {
-    web: () => Promise.resolve().then(() => web$1).then((m) => new m.SplashScreenWeb())
+    web: () => Promise.resolve().then(() => web$3).then((m) => new m.SplashScreenWeb())
   });
   var Style;
   (function(Style2) {
@@ -605,14 +606,171 @@
   })(Animation || (Animation = {}));
   const StatusBar = registerPlugin("StatusBar");
   const Toast = registerPlugin("Toast", {
-    web: () => Promise.resolve().then(() => web).then((m) => new m.ToastWeb())
+    web: () => Promise.resolve().then(() => web$2).then((m) => new m.ToastWeb())
+  });
+  const AppLauncher = registerPlugin("AppLauncher", {
+    web: () => Promise.resolve().then(() => web$1).then((m) => new m.AppLauncherWeb())
+  });
+  var Weekday;
+  (function(Weekday2) {
+    Weekday2[Weekday2["Sunday"] = 1] = "Sunday";
+    Weekday2[Weekday2["Monday"] = 2] = "Monday";
+    Weekday2[Weekday2["Tuesday"] = 3] = "Tuesday";
+    Weekday2[Weekday2["Wednesday"] = 4] = "Wednesday";
+    Weekday2[Weekday2["Thursday"] = 5] = "Thursday";
+    Weekday2[Weekday2["Friday"] = 6] = "Friday";
+    Weekday2[Weekday2["Saturday"] = 7] = "Saturday";
+  })(Weekday || (Weekday = {}));
+  const LocalNotifications = registerPlugin("LocalNotifications", {
+    web: () => Promise.resolve().then(() => web).then((m) => new m.LocalNotificationsWeb())
   });
   window.capacitorBridge = {};
+  window.capacitorBridge.pushNotificatonToken = "";
   if (Capacitor.isNativePlatform()) {
     console.log("I'm a native app!");
   } else {
     console.log("I'm a PWA or Web app!");
   }
+  window.capacitorBridge.registerPushNotification = function() {
+    PushNotifications.requestPermissions().then((result) => {
+      console.log("requestPermissions!");
+      if (result.receive === "granted") {
+        PushNotifications.register();
+      }
+    });
+    PushNotifications.addListener(
+      "registration",
+      (token) => {
+        window.capacitorBridge.pushNotificatonToken = token.value;
+        alert("Push registration success, token: " + token.value);
+      }
+    );
+    PushNotifications.addListener(
+      "registrationError",
+      (error) => {
+        alert("Error on registration: " + JSON.stringify(error));
+      }
+    );
+    PushNotifications.addListener(
+      "pushNotificationReceived",
+      (notification) => {
+        alert("Push received: " + JSON.stringify(notification));
+      }
+    );
+    PushNotifications.addListener(
+      "pushNotificationActionPerformed",
+      (notification) => {
+        alert("Push action performed: " + JSON.stringify(notification));
+      }
+    );
+  };
+  window.capacitorBridge.sendTestPushNotification = function() {
+    if (!window.capacitorBridge.pushNotificatonToken) {
+      console.log("尚未註冊推播!");
+    }
+    const apiUrl = "https://fcm.googleapis.com/fcm/send";
+    const headers = {
+      "Content-Type": "application/json",
+      "Authorization": `key=AAAAKWlcCNg:APA91bGBMqIoyrCv9xtlYFi760aSBoKWaGqLGXhmN_wYmjCemliEJ2HxaBhFm5fpWAW0R_vwb8BIXqCiicgwC5NyeDlblwAH9CcQeTt8iyjE_4jA9WaElITvW7lDxLXcNHuotaZu8JO9`
+    };
+    const postData = {
+      "to": window.capacitorBridge.pushNotificatonToken,
+      "priority": "high",
+      "notification": {
+        "title": "FCM Message",
+        "body": "測試firebase 訊息推播"
+      },
+      "data": {
+        "demo_key": "測試firebase 資料推播"
+      }
+    };
+    fetch(apiUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(postData)
+    }).then((response) => {
+      console.log("response", response);
+    });
+  };
+  window.capacitorBridge.registerLocalNotification = function() {
+    LocalNotifications.requestPermissions().then((result) => {
+      console.log("requestPermissions!");
+      if (result.display === "granted")
+        ;
+    });
+  };
+  window.capacitorBridge.sendTestLocalNotification = function() {
+    LocalNotifications.schedule({
+      notifications: [
+        {
+          title: "訊息",
+          body: "測試1秒後app本地推播",
+          id: 1,
+          // Scheduled time must be *after* current time
+          schedule: { at: new Date(Date.now() + 1e3) },
+          sound: "",
+          attachments: [],
+          actionTypeId: "",
+          extra: ""
+        }
+      ]
+    });
+  };
+  window.capacitorBridge.registerWebsocket = function() {
+    var wsUri = "wss://socketsbay.com/wss/v2/1/demo/";
+    var websocket;
+    function init() {
+      testWebSocket();
+    }
+    function testWebSocket() {
+      websocket = new WebSocket(wsUri);
+      websocket.onopen = function(evt) {
+        onOpen();
+      };
+      websocket.onclose = function(evt) {
+        onClose();
+      };
+      websocket.onmessage = function(evt) {
+        onMessage(evt);
+      };
+      websocket.onerror = function(evt) {
+        onError(evt);
+      };
+    }
+    function onOpen(evt) {
+      sendMessage("Hello world");
+      console.log(`Websocket CONNECTED`);
+    }
+    function onClose(evt) {
+      console.log(`Websocket DISCONNECTED`);
+    }
+    function onMessage(evt) {
+      console.log(`RESPONSE: ${evt.data}`);
+      LocalNotifications.schedule({
+        notifications: [
+          {
+            title: "訊息",
+            body: evt.data,
+            id: 1,
+            // Scheduled time must be *after* current time
+            schedule: { at: new Date(Date.now() + 1e3) },
+            sound: "",
+            attachments: [],
+            actionTypeId: "",
+            extra: ""
+          }
+        ]
+      });
+    }
+    function onError(evt) {
+      console.log(`ERROR: ${evt.data}`);
+    }
+    function sendMessage(message) {
+      websocket.send(message);
+    }
+    window.capacitorBridge.registerWebsocket.socketSendMessage = sendMessage;
+    init();
+  };
   window.capacitorBridge.takePicture = async () => {
     const image = await Camera$1.getPhoto({
       quality: 90,
@@ -622,7 +780,7 @@
     image.webPath;
   };
   window.capacitorBridge.showPrompt = async () => {
-    const { value, cancelled } = await Dialog.prompt({
+    const { value, cancelled } = await window.Capacitor.Plugins.Dialog.prompt({
       title: "訊息",
       message: `確定刪除訊息?`,
       okButtonTitle: "確定",
@@ -638,8 +796,7 @@
     const idObj = await Device.getId();
     Dialog.alert({
       title: "訊息",
-      message: `app ID: ${idObj.identifier}`,
-      okButtonTitle: "確定"
+      message: `app ID: ${idObj.identifier}`
     });
   };
   window.capacitorBridge.writeFile = async () => {
@@ -655,8 +812,7 @@
     Dialog.alert({
       title: "訊息",
       message: `lat: ${coordinates.coords.latitude}, 
-    lng: ${coordinates.coords.longitude}`,
-      okButtonTitle: "確定"
+    lng: ${coordinates.coords.longitude}`
     });
   };
   window.capacitorBridge.hapticsVibrate = async () => {
@@ -701,8 +857,7 @@
   Keyboard.addListener("keyboardDidShow", (info) => {
     Dialog.alert({
       title: "訊息",
-      message: `鍵盤已顯示，鍵盤高度為: ${info.keyboardHeight}`,
-      okButtonTitle: "確定"
+      message: `鍵盤已顯示，鍵盤高度為: ${info.keyboardHeight}`
     });
   });
   class CameraWeb extends WebPlugin {
@@ -922,7 +1077,7 @@
     }
   }
   const Camera = new CameraWeb();
-  const web$a = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$c = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     Camera,
     CameraWeb
@@ -945,7 +1100,7 @@
       };
     }
   }
-  const web$9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$b = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     DialogWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -970,7 +1125,7 @@
     }
   }
   const Browser = new BrowserWeb();
-  const web$8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$a = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     Browser,
     BrowserWeb
@@ -1116,7 +1271,7 @@
       });
     }
   }
-  const web$7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$9 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     DeviceWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -1677,7 +1832,7 @@
     }
   }
   FilesystemWeb._debug = true;
-  const web$6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$8 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     FilesystemWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -1716,7 +1871,7 @@
     }
   }
   const Geolocation = new GeolocationWeb();
-  const web$5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$7 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     Geolocation,
     GeolocationWeb
@@ -1773,7 +1928,7 @@
       }
     }
   }
-  const web$4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$6 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     HapticsWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -1814,7 +1969,7 @@
       }
     }
   }
-  const web$3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$5 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     ScreenOrientationWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -1838,7 +1993,7 @@
       return {};
     }
   }
-  const web$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$4 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     ShareWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -1850,7 +2005,7 @@
       return void 0;
     }
   }
-  const web$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$3 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     SplashScreenWeb
   }, Symbol.toStringTag, { value: "Module" }));
@@ -1868,8 +2023,184 @@
       }
     }
   }
-  const web = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  const web$2 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
     __proto__: null,
     ToastWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class AppLauncherWeb extends WebPlugin {
+    async canOpenUrl(_options) {
+      return { value: true };
+    }
+    async openUrl(options) {
+      window.open(options.url, "_blank");
+      return { completed: true };
+    }
+  }
+  const web$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    AppLauncherWeb
+  }, Symbol.toStringTag, { value: "Module" }));
+  class LocalNotificationsWeb extends WebPlugin {
+    constructor() {
+      super(...arguments);
+      this.pending = [];
+      this.deliveredNotifications = [];
+      this.hasNotificationSupport = () => {
+        if (!("Notification" in window) || !Notification.requestPermission) {
+          return false;
+        }
+        if (Notification.permission !== "granted") {
+          try {
+            new Notification("");
+          } catch (e) {
+            if (e.name == "TypeError") {
+              return false;
+            }
+          }
+        }
+        return true;
+      };
+    }
+    async getDeliveredNotifications() {
+      const deliveredSchemas = [];
+      for (const notification of this.deliveredNotifications) {
+        const deliveredSchema = {
+          title: notification.title,
+          id: parseInt(notification.tag),
+          body: notification.body
+        };
+        deliveredSchemas.push(deliveredSchema);
+      }
+      return {
+        notifications: deliveredSchemas
+      };
+    }
+    async removeDeliveredNotifications(delivered) {
+      for (const toRemove of delivered.notifications) {
+        const found = this.deliveredNotifications.find((n) => n.tag === String(toRemove.id));
+        found === null || found === void 0 ? void 0 : found.close();
+        this.deliveredNotifications = this.deliveredNotifications.filter(() => !found);
+      }
+    }
+    async removeAllDeliveredNotifications() {
+      for (const notification of this.deliveredNotifications) {
+        notification.close();
+      }
+      this.deliveredNotifications = [];
+    }
+    async createChannel() {
+      throw this.unimplemented("Not implemented on web.");
+    }
+    async deleteChannel() {
+      throw this.unimplemented("Not implemented on web.");
+    }
+    async listChannels() {
+      throw this.unimplemented("Not implemented on web.");
+    }
+    async schedule(options) {
+      if (!this.hasNotificationSupport()) {
+        throw this.unavailable("Notifications not supported in this browser.");
+      }
+      for (const notification of options.notifications) {
+        this.sendNotification(notification);
+      }
+      return {
+        notifications: options.notifications.map((notification) => ({
+          id: notification.id
+        }))
+      };
+    }
+    async getPending() {
+      return {
+        notifications: this.pending
+      };
+    }
+    async registerActionTypes() {
+      throw this.unimplemented("Not implemented on web.");
+    }
+    async cancel(pending) {
+      this.pending = this.pending.filter((notification) => !pending.notifications.find((n) => n.id === notification.id));
+    }
+    async areEnabled() {
+      const { display } = await this.checkPermissions();
+      return {
+        value: display === "granted"
+      };
+    }
+    async requestPermissions() {
+      if (!this.hasNotificationSupport()) {
+        throw this.unavailable("Notifications not supported in this browser.");
+      }
+      const display = this.transformNotificationPermission(await Notification.requestPermission());
+      return { display };
+    }
+    async checkPermissions() {
+      if (!this.hasNotificationSupport()) {
+        throw this.unavailable("Notifications not supported in this browser.");
+      }
+      const display = this.transformNotificationPermission(Notification.permission);
+      return { display };
+    }
+    transformNotificationPermission(permission) {
+      switch (permission) {
+        case "granted":
+          return "granted";
+        case "denied":
+          return "denied";
+        default:
+          return "prompt";
+      }
+    }
+    sendPending() {
+      var _a;
+      const toRemove = [];
+      const now = (/* @__PURE__ */ new Date()).getTime();
+      for (const notification of this.pending) {
+        if (((_a = notification.schedule) === null || _a === void 0 ? void 0 : _a.at) && notification.schedule.at.getTime() <= now) {
+          this.buildNotification(notification);
+          toRemove.push(notification);
+        }
+      }
+      this.pending = this.pending.filter((notification) => !toRemove.find((n) => n === notification));
+    }
+    sendNotification(notification) {
+      var _a;
+      if ((_a = notification.schedule) === null || _a === void 0 ? void 0 : _a.at) {
+        const diff = notification.schedule.at.getTime() - (/* @__PURE__ */ new Date()).getTime();
+        this.pending.push(notification);
+        setTimeout(() => {
+          this.sendPending();
+        }, diff);
+        return;
+      }
+      this.buildNotification(notification);
+    }
+    buildNotification(notification) {
+      const localNotification = new Notification(notification.title, {
+        body: notification.body,
+        tag: String(notification.id)
+      });
+      localNotification.addEventListener("click", this.onClick.bind(this, notification), false);
+      localNotification.addEventListener("show", this.onShow.bind(this, notification), false);
+      localNotification.addEventListener("close", () => {
+        this.deliveredNotifications = this.deliveredNotifications.filter(() => !this);
+      }, false);
+      this.deliveredNotifications.push(localNotification);
+      return localNotification;
+    }
+    onClick(notification) {
+      const data = {
+        actionId: "tap",
+        notification
+      };
+      this.notifyListeners("localNotificationActionPerformed", data);
+    }
+    onShow(notification) {
+      this.notifyListeners("localNotificationReceived", notification);
+    }
+  }
+  const web = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+    __proto__: null,
+    LocalNotificationsWeb
   }, Symbol.toStringTag, { value: "Module" }));
 });
