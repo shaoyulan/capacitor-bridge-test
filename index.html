@@ -28,7 +28,7 @@
   </style>
 </head>
 <body>
-    <h3>網頁端引用js bridge操作原生app api</h3>
+    <h3>網頁端引用js bridge操作原生app api2</h3>
     <div id="log"></div>
     <button onclick="window.capacitorBridge.takePicture()">拍照</button>
     <button onclick="window.capacitorBridge.showPrompt()">跳出提示</button>
@@ -36,7 +36,7 @@
     <button onclick="window.capacitorBridge.sendTestLocalNotification()">1秒後發送app本地推播</button>
     <button onclick="window.capacitorBridge.openCapacitorSite()">開啟app內瀏覽器</button>
     <button onclick="window.capacitorBridge.logDeviceInfo()">顯示app ID</button>
-    <button onclick="window.capacitorBridge.writeFile()">儲存檔案到本地(capacitor-save-file-test.txt)</button>
+    <button onclick="writeRandomFile()">儲存檔案到本地(capacitor-save-file-test.txt)</button>
     <button onclick="window.capacitorBridge.hapticsVibrate()">測試震動</button>
     <button onclick="window.capacitorBridge.printCurrentPosition()">顯示當前經緯度</button>
     <button onclick="window.capacitorBridge.lockOrientation()">鎖定landscape畫面</button>
@@ -51,6 +51,16 @@
   <script src="capacitor-bridge.umd.js?v=2"></script>
   <script>
     const capacitorBridge = window.capacitorBridge
+
+    function writeRandomFile(){
+      const hours = new Date().getHours()
+      const seconds = new Date().getSeconds()
+      CapacitorBridge.writeFile({
+        path: `capacitor-save-file-test-${hours}-${seconds}.txt`,
+        data: 'This is a test',
+      })
+    }
+
 
     var wsUri = "wss://socketsbay.com/wss/v2/1/demo/";
     var log = document.querySelector('#log');
